@@ -167,8 +167,9 @@ def getPossibleMoves(positions, white):
         for pawnType in positions["white"].items():
             if len(pawnType):
                 for pawnPosition in pawnType:
-                    if pawnType == "P":
-                        if pawnPosition[0]
+                    moves = boi.getAnArrayOfPossibleFigureMoves(
+                        pawnPosition, pawnType)
+                    possibleMoves.extend(moves)
 
 
 def draw(positions, frame=3, turn=0, whiteKills="", blackKills=""):

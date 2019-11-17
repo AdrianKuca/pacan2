@@ -1,9 +1,10 @@
 import copy
+import chessObjects as co
 topSignature = "abcdefgh"
 topSignatureV = "A B C D E F G H"
 leftSignature = "87654321"
-startingPos = {"white": {"R": ["a1", "h1"], "N": [
-    "b1", "g1"], "B": ["c1", "f1"], "Q": ["d1"], "K": ["e1"], "P": ["a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2"]},
+startingPos = {"white": {"R": [co.Position(0, 0), co.Position(7, 0)], "N": [
+    co.Position(1, 0), co.Position(6, 0)], "B": [co.Position(2, 0), co.Position(5, 0)], "Q": [co.Position(3, 0)], "K": [co.Position(4, 0)], "P": ["a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2"]},
     "black": {"R": ["a8", "h8"], "N": [
         "b8", "g8"], "B": ["c8", "f8"], "Q": ["d8"], "K": ["e8"], "P": ["a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7"]}}
 
