@@ -3,3 +3,5 @@ input.npy
 chess.zip
 Train.npy
 Train.json
+__pycache__
+.vscode
