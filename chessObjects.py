@@ -11,11 +11,17 @@ class Board:
 
 class Position:
     def __init__(self, x, y):
-        if isPositionInBoard(x, y):
+        if self.isPositionInBoard(x, y):
             self.x = x
             self.y = y
         else:
             raise Exception("Position out of board")
+
+    def __eq__(self, value):
+        if self.x == value.x and self.y == value.y:
+            return True
+        else:
+            return False
 
     def isPositionInBoard(self, x, y):
         if x >= 0 and x < 8 and y >= 0 and y < 8:

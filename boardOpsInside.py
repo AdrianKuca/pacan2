@@ -3,71 +3,71 @@ import chessObjects as co
 topSignature = "abcdefgh"
 topSignatureV = "A B C D E F G H"
 leftSignature = "87654321"
-startingPos = {"white": {"R": [co.Position(0, 0), co.Position(7, 0)], "N": [
-    co.Position(1, 0), co.Position(6, 0)], "B": [co.Position(2, 0), co.Position(5, 0)], "Q": [co.Position(3, 0)], "K": [co.Position(4, 0)], "P": ["a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2"]},
-    "black": {"R": ["a8", "h8"], "N": [
-        "b8", "g8"], "B": ["c8", "f8"], "Q": ["d8"], "K": ["e8"], "P": ["a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7"]}}
+startingPos = {
+    "white": {
+        "R": [co.Position(0, 0), co.Position(7, 0)],
+        "N": [co.Position(1, 0), co.Position(6, 0)],
+        "B": [co.Position(2, 0), co.Position(5, 0)],
+        "Q": [co.Position(3, 0)],
+        "K": [co.Position(4, 0)],
+        "P": [co.Position(0, 2), co.Position(1, 2), co.Position(2, 2), co.Position(3, 2), co.Position(4, 2), co.Position(5, 2), co.Position(6, 2), co.Position(7, 2)]},
+    "black": {
+        "R": [co.Position(0, 7), co.Position(7, 7)],
+        "N": [co.Position(1, 7), co.Position(6, 7)],
+        "B": [co.Position(2, 7), co.Position(5, 7)],
+        "Q": [co.Position(3, 7)],
+        "K": [co.Position(4, 7)],
+        "P": [co.Position(0, 6), co.Position(1, 6), co.Position(2, 6), co.Position(3, 6), co.Position(4, 6), co.Position(5, 6), co.Position(6, 6), co.Position(7, 6)]}}
 
 
 def findPawn(p, positions):
     for color in ["white", "black"]:
-        for pawn in positions[color]:
+        for pawnType in positions[color]:
             i = 0
-            for square in positions[color][pawn]:
+            for square in positions[color][pawnType]:
                 if square == p:
-                    return color, pawn, i
+                    return color, pawnType, i
                 i += 1
 
 
-def getPawn(p, positions):
+def getPawnTypeOnPosition(p, positions):
     for color in ["white", "black"]:
-        for pawn in positions[color]:
-            for square in positions[color][pawn]:
+        for pawnType in positions[color]:
+            for square in positions[color][pawnType]:
                 if p == square:
-                    return pawn
+                    return pawnType
     return " "
 
 
-def isWhiteSquare(square):
-    if int(square[1]) % 2 == 0:
-        if "aceg".find(square[0]) == -1:
-            return True
-    else:
-        if "bdfh".find(square[0]) == -1:
-            return True
-    return False
+def isWhiteSquare(position):
+    if position.y % 2 == 0 and position.x % 2 == 0:
+        return False
+    if position.y % 2 == 0 and not position.x % 2 == 0:
+        return True
+    if not position.y % 2 == 0 and position.x % 2 == 0:
+        return True
 
 
-def skewCollision(start, end, allPositions, hit):
-    startXIndex = topSignature.find(start[0])
-    startYIndex = leftSignature.find(start[1])
-    endXIndex = topSignature.find(end[0])
-    endYIndex = leftSignature.find(end[1])
-    leftToRight = True if endXIndex > startXIndex else False
-    topToBottom = True if endYIndex > startYIndex else False
-    distance = abs(endXIndex - startXIndex)
-    if (startXIndex + (distance if leftToRight else -distance)) > 7 \
-            or (startYIndex + (distance if topToBottom else -distance)) > 7 \
-            or (startXIndex + (distance if leftToRight else -distance)) < 0 \
-            or (startYIndex + (distance if topToBottom else -distance)) < 0:
-        return False, ["error"]
-    if topSignature[startXIndex + (distance if leftToRight else -distance)] != end[0] or leftSignature[startYIndex + (distance if topToBottom else -distance)] != end[1]:
-        return False, ["error"]
+def skewCollision(startPosition, endPosition, allPositions, hit):
+    leftToRight = True if endPosition.x > startPosition.x else False
+    topToBottom = True if endPosition.y > startPosition.y else False
+    distance = abs(endPosition.x - startPosition.x)
+
     obstacles = []
     for color in allPositions:
-        for pawn in allPositions[color]:
-            for p in allPositions[color][pawn]:
-                obstacleXIndex = topSignature.find(p[0])
-                obstacleYIndex = leftSignature.find(p[1])
+        for pawnType in allPositions[color]:
+            for obstacle in allPositions[color][pawnType]:
                 for i in range(1, distance+(1 if not hit else 0)):
                     x = i if leftToRight else -i
                     y = i if topToBottom else -i
-                    if obstacleXIndex == startXIndex+x and obstacleYIndex == startYIndex+y:
-                        obstacles.append(p)
+                    if obstacle.x == startPosition.x+x and obstacle.y == startPosition.y+y:
+                        obstacles.append(obstacle)
     if len(obstacles) > 0:
         return True, obstacles
     else:
         return False, []
+
+# Kontynuuj
 
 
 def hvCollision(start, end, allPositions):

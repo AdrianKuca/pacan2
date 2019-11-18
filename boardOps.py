@@ -96,7 +96,7 @@ def liMove(move, positions, white, possiblePassant):
             return False, positions, " ", check, mate, twoSquares
         start = positions[sColor][pawn][i]
         end = move[len(move)-2: len(move)]
-        target = boi.getPawn(end, positions)
+        target = boi.getPawnTypeOnPosition(end, positions)
         positions[sColor][pawn][i] = end
         if hit:
             if possiblePassant != False:
