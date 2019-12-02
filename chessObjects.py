@@ -1,21 +1,35 @@
-class Board:
-    leftSignature = "87654321"
-    topSignatureV = "A B C D E F G H"
-
-    def __init__(self):
-        self.positions = {"white": {"R": [co.Position(0, 0), co.Position(7, 0)], "N": [
-            "b1", "g1"], "B": ["c1", "f1"], "Q": ["d1"], "K": ["e1"], "P": ["a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2"]},
-            "black": {"R": ["a8", "h8"], "N": [
-                "b8", "g8"], "B": ["c8", "f8"], "Q": ["d8"], "K": ["e8"], "P": ["a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7"]}}
+import numpy
 
 
 class Position:
+    @property
+    def x(self):
+        return self.coordinates[0]
+
+    @x.setter
+    def x(self, a):
+        if self.isyInBoard():
+            self.coordinates[0] = a
+        else:
+            raise Exception("X out of board")
+
+    @property
+    def y(self):
+        return self.coordinates[1]
+
+    @y.setter
+    def y(self, a):
+        if self.isyInBoard():
+            self.coordinates[1] = a
+        else:
+            raise Exception("Y out of board")
+
     def __init__(self, x, y):
         if self.isPositionInBoard(x, y):
-            self.x = x
-            self.y = y
+            self.coordinates = numpy.array([x, y])
         else:
-            raise Exception("Position out of board")
+            return None
+            # raise Exception("Position out of board")
 
     def __eq__(self, value):
         if self.x == value.x and self.y == value.y:
@@ -29,68 +43,81 @@ class Position:
         else:
             return False
 
-    def checkLengthOfTheMove(self, lengthOfTheMove):
-        if lengthOfTheMove <= 0:
-            raise Exception("Length of the move cant be zero nor negative")
-
-    def getForward(self, white):
-        if white:
-            forward = 1
+    def isxInBoard(self, x):
+        if x >= 0 and x < 8:
+            return True
         else:
-            forward = -1
+            return False
 
-    def moveForward(self, lengthOfTheMove, white):
-        self.checkLengthOfTheMove(lengthOfTheMove)
-        newPositionY = self.y + lengthOfTheMove * self.getForward(white)
-        if self.isPositionInBoard(self.x, newPositionY):
-            self.y = newPositionY
+    def isyInBoard(self, y):
+        if y >= 0 and y < 8:
+            return True
+        else:
+            return False
 
-    def moveBackward(self, lengthOfTheMove, white):
-        self.checkLengthOfTheMove(lengthOfTheMove)
-        newPositionY = self.y - lengthOfTheMove * self.getForward(white)
-        if self.isPositionInBoard(self.x, newPositionY):
-            self.y = newPositionY
 
-    def moveRight(self, lengthOfTheMove, white):
-        self.checkLengthOfTheMove(lengthOfTheMove)
-        newPositionX = self.x + lengthOfTheMove * self.getForward(white)
-        if self.isPositionInBoard(newPositionX, self.y):
-            self.x = newPositionX
+class Figure:
+    def recalculatePossibleFigureMoves(self, position):
+        raise NotImplementedError
 
-    def moveLeft(self, lengthOfTheMove, white):
-        self.checkLengthOfTheMove(lengthOfTheMove)
-        newPositionX = self.x - lengthOfTheMove * self.getForward(white)
-        if self.isPositionInBoard(newPositionX, self.y):
-            self.x = newPositionX
+    def isPossibleFigureMove(self, start, end):
+        raise NotImplementedError
 
-    def moveSkewForwardRight(self, lengthOfTheMove, white):
-        self.checkLengthOfTheMove(lengthOfTheMove)
-        newPositionX = self.x + lengthOfTheMove * self.getForward(white)
-        newPositionY = self.y + lengthOfTheMove * self.getForward(white)
-        if self.isPositionInBoard(newPositionX, newPositionY):
-            self.y = newPositionY
-            self.x = newPositionX
 
-    def moveSkewForwardLeft(self, lengthOfTheMove, white):
-        self.checkLengthOfTheMove(lengthOfTheMove)
-        newPositionX = self.x - lengthOfTheMove * self.getForward(white)
-        newPositionY = self.y + lengthOfTheMove * self.getForward(white)
-        if self.isPositionInBoard(newPositionX, newPositionY):
-            self.y = newPositionY
-            self.x = newPositionX
+class Pawn(Figure):
+    self.symbol = "P"
 
-    def moveSkewBackwardRight(self, lengthOfTheMove, white):
-        self.checkLengthOfTheMove(lengthOfTheMove)
-        newPositionX = self.x + lengthOfTheMove * self.getForward(white)
-        newPositionY = self.y - lengthOfTheMove * self.getForward(white)
-        if self.isPositionInBoard(newPositionX, newPositionY):
-            self.y = newPositionY
-            self.x = newPositionX
+    def isPossibleFigureMove(self, start, end, direction):
+        return end.x == start.x and (end.y == start.y + direction or end.x == start.y + direction + direction)
 
-    def moveSkewBackwardLeft(self, lengthOfTheMove, white):
-        self.checkLengthOfTheMove(lengthOfTheMove)
-        newPositionX = self.x - lengthOfTheMove * self.getForward(white)
-        newPositionY = self.y - lengthOfTheMove * self.getForward(white)
-        if self.isPositionInBoard(newPositionX, newPositionY):
-            self.y = newPositionY
-            self.x = newPositionX
+    def recalculatePossibleFigureMoves(self, position, direction):
+        return [
+            Position(position.x, position.y+direction),
+            Position(position.x, position.y+direction+direction),
+            Position(position.x+1, position.y+direction),
+            Position(position.x-1, position.y+direction)
+        ]
+
+
+class Knight(Figure):
+    self.symbol = "N"
+
+    def recalculatePossibleFigureMoves(self, position):
+        pass
+
+
+class Rook(Figure):
+    self.symbol = "R"
+
+
+class Bishop(Figure):
+    self.symbol = "B"
+
+
+class Queen(Figure):
+    self.symbol = "Q"
+
+
+class King(Figure):
+    self.symbol = "K"
+
+
+class Checker:
+    def __init__(self, figure, position, color, facing):
+        self.figure = figure
+        self.position = position
+        self.color = color
+        self.facing = facing
+        self.recalculatePossibleMoves()
+
+    def recalculatePossibleMoves(self):
+        self.figureMoves = self.figure.recalculatePossibleMoves(
+            position)  # pionek nie wie gdzie są inne pionki
+
+    def move(self):
+        #move and then
+        recalculatePossibleMoves()
+
+
+class Board:
+    pass  # więc liczenie kolizji zostawiamy dla board, która będzie znała pozycje wszystkich pionków
