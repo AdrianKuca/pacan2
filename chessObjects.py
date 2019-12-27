@@ -1,4 +1,3 @@
-import numpy
 
 
 class Position:
@@ -16,12 +15,14 @@ class Position:
         else:
             return False
 
+    @staticmethod
     def isPositionInBoard(self, x, y):
         if x >= 0 and x < 8 and y >= 0 and y < 8:
             return True
         else:
             return False
 
+    @staticmethod
     def isCoordInBoard(self, y):
         if y >= 0 and y < 8:
             return True
@@ -30,25 +31,27 @@ class Position:
 
 
 class Figure:
-    def getPossibleFigureMoves(self, position):
+    @staticmethod
+    def getPossibleFigureMoves(position):
         raise NotImplementedError
 
-    def isPossibleFigureMove(self, start, end):
+    @staticmethod
+    def isPossibleFigureMove(start, end):
         raise NotImplementedError
 
 
 class Pawn(Figure):
     self.symbol = "P"
 
-    def isPossibleFigureMove(self, start, end, direction):
-        return end.x == start.x and (end.y == start.y + direction or end.x == start.y + direction + direction)
+    @staticmethod
+    def isPossibleFigureMove(start, end, direction):
+        return end.x == start.x and (end.y == start.y + direction or end.y == start.y + direction + direction)
 
-    def getPossibleFigureMoves(self, position, direction):
+    @staticmethod
+    def getPossibleFigureMoves(position, forwardNumber):
         possibleMoves = [
-            Position(position.x, position.y+direction),
-            Position(position.x, position.y+direction+direction),
-            Position(position.x+1, position.y+direction),
-            Position(position.x-1, position.y+direction)
+            Position(position.x, position.y+forwardNumber),
+            Position(position.x, position.y+forwardNumber+forwardNumber)
         ]
         for i in range(0, len(possibleMoves)):
             if possibleMoves[i] is None:
@@ -59,7 +62,8 @@ class Pawn(Figure):
 class Knight(Figure):
     self.symbol = "N"
 
-    def getPossibleFigureMoves(self, position):
+    @staticmethod
+    def getPossibleFigureMoves(position):
         possibleMoves = [
             Position(position.x+1, position.y+2),
             Position(position.x+2, position.y+1),
@@ -79,7 +83,8 @@ class Knight(Figure):
 class Rook(Figure):
     self.symbol = "R"
 
-    def getPossibleFigureMoves(self, position):
+    @staticmethod
+    def getPossibleFigureMoves(position):
         possibleMoves = []
         for i in range(0, 8):
             if position.x != i:
@@ -93,7 +98,8 @@ class Rook(Figure):
 class Bishop(Figure):
     self.symbol = "B"
 
-    def getPossibleFigureMoves(self, position):
+    @staticmethod
+    def getPossibleFigureMoves(position):
         possibleMoves = []
         for i in range(1, 8 - position.x):
             possibleMoves.append(Position(position.x + i, position.y + i))
@@ -109,7 +115,8 @@ class Bishop(Figure):
 class Queen(Figure):
     self.symbol = "Q"
 
-    def getPossibleFigureMoves(self, position):
+    @staticmethod
+    def getPossibleFigureMoves(position):
         possibleMoves = []
         for i in range(1, 8 - position.x):
             possibleMoves.append(Position(position.x + i, position.y + i))
@@ -131,7 +138,8 @@ class Queen(Figure):
 class King(Figure):
     self.symbol = "K"
 
-    def getPossibleFigureMoves(self, position):
+    @staticmethod
+    def getPossibleFigureMoves(position):
         possibleMoves = [
             Position(position.x, position.y+1),
             Position(position.x, position.y-1),
@@ -151,23 +159,31 @@ class King(Figure):
 
 
 class Checker:
-    def __init__(self, figure, position, color, facing):
+    def __init__(self, figure, position, isWhite, forwardNumber):
         self.figure = figure
         self.position = position
-        self.color = color
-        self.facing = facing
+        self.isWhite = isWhite
+        self.forwardNumber = forwardNumber
         self.isProtectingKing = False
         self.isAttackingKing = False
+        self.isVulnerableToPassant = False
         self.recalculatePossibleMoves()
 
     def recalculatePossibleMoves(self):
-        self.figureMoves = self.figure.getPossibleFigureMoves(
-            position)  # pionek nie wie gdzie są inne pionki
+        if issubclass(self.figure, Pawn):
+            self.figureMoves = self.figure.getPossibleFigureMoves(
+                position, self.forwardNumber)
+        else:
+            self.figureMoves = self.figure.getPossibleFigureMoves(
+                position)
 
-    def move(self):
-        # move and then
+    def move(self, position):
+        if position is None:
+            raise Exception("Position out of board.")
+        self.position = position
         recalculatePossibleMoves()
 
 
 class Board:
-    pass  # więc liczenie kolizji zostawiamy dla board, która będzie znała pozycje wszystkich pionków
+            # pionek nie wie gdzie są inne pionki
+    pass  # więc liczenie kolizji i bić zostawiamy dla board, która będzie znała pozycje wszystkich pionków
