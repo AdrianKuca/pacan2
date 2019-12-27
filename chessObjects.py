@@ -2,34 +2,13 @@ import numpy
 
 
 class Position:
-    @property
-    def x(self):
-        return self.coordinates[0]
-
-    @x.setter
-    def x(self, a):
-        if self.isCoordInBoard():
-            self.coordinates[0] = a
-        else:
-            raise Exception("X out of board")
-
-    @property
-    def y(self):
-        return self.coordinates[1]
-
-    @y.setter
-    def y(self, a):
-        if self.isCoordInBoard():
-            self.coordinates[1] = a
-        else:
-            raise Exception("Y out of board")
 
     def __init__(self, x, y):
         if self.isPositionInBoard(x, y):
-            self.coordinates = numpy.array([x, y])
+            self.x = x
+            self.y = y
         else:
             return None
-            # raise Exception("Position out of board")
 
     def __eq__(self, value):
         if self.x == value.x and self.y == value.y:
@@ -51,7 +30,7 @@ class Position:
 
 
 class Figure:
-    def recalculatePossibleFigureMoves(self, position):
+    def getPossibleFigureMoves(self, position):
         raise NotImplementedError
 
     def isPossibleFigureMove(self, start, end):
@@ -64,20 +43,24 @@ class Pawn(Figure):
     def isPossibleFigureMove(self, start, end, direction):
         return end.x == start.x and (end.y == start.y + direction or end.x == start.y + direction + direction)
 
-    def recalculatePossibleFigureMoves(self, position, direction):
-        return [
+    def getPossibleFigureMoves(self, position, direction):
+        possibleMoves = [
             Position(position.x, position.y+direction),
             Position(position.x, position.y+direction+direction),
             Position(position.x+1, position.y+direction),
             Position(position.x-1, position.y+direction)
         ]
+        for i in range(0, len(possibleMoves)):
+            if possibleMoves[i] is None:
+                possibleMoves.pop(i)
+        return possibleMoves
 
 
 class Knight(Figure):
     self.symbol = "N"
 
-    def recalculatePossibleFigureMoves(self, position):
-        return [
+    def getPossibleFigureMoves(self, position):
+        possibleMoves = [
             Position(position.x+1, position.y+2),
             Position(position.x+2, position.y+1),
             Position(position.x+2, position.y-1),
@@ -87,12 +70,16 @@ class Knight(Figure):
             Position(position.x-2, position.y-1),
             Position(position.x-1, position.y-2),
         ]
+        for i in range(0, len(possibleMoves)):
+            if possibleMoves[i] is None:
+                possibleMoves.pop(i)
+        return possibleMoves
 
 
 class Rook(Figure):
     self.symbol = "R"
 
-    def recalculatePossibleFigureMoves(self, position):
+    def getPossibleFigureMoves(self, position):
         possibleMoves = []
         for i in range(0, 8):
             if position.x != i:
@@ -106,7 +93,7 @@ class Rook(Figure):
 class Bishop(Figure):
     self.symbol = "B"
 
-    def recalculatePossibleFigureMoves(self, position):
+    def getPossibleFigureMoves(self, position):
         possibleMoves = []
         for i in range(1, 8 - position.x):
             possibleMoves.append(Position(position.x + i, position.y + i))
@@ -122,7 +109,7 @@ class Bishop(Figure):
 class Queen(Figure):
     self.symbol = "Q"
 
-    def recalculatePossibleFigureMoves(self, position):
+    def getPossibleFigureMoves(self, position):
         possibleMoves = []
         for i in range(1, 8 - position.x):
             possibleMoves.append(Position(position.x + i, position.y + i))
@@ -144,8 +131,8 @@ class Queen(Figure):
 class King(Figure):
     self.symbol = "K"
 
-    def recalculatePossibleFigureMoves(self, position):
-        return [
+    def getPossibleFigureMoves(self, position):
+        possibleMoves = [
             Position(position.x, position.y+1),
             Position(position.x, position.y-1),
 
@@ -157,6 +144,10 @@ class King(Figure):
             Position(position.x-1, position.y),
             Position(position.x-1, position.y-1),
         ]
+        for i in range(0, len(possibleMoves)):
+            if possibleMoves[i] is None:
+                possibleMoves.pop(i)
+        return possibleMoves
 
 
 class Checker:
@@ -170,11 +161,11 @@ class Checker:
         self.recalculatePossibleMoves()
 
     def recalculatePossibleMoves(self):
-        self.figureMoves = self.figure.recalculatePossibleMoves(
+        self.figureMoves = self.figure.getPossibleFigureMoves(
             position)  # pionek nie wie gdzie są inne pionki
 
     def move(self):
-        #move and then
+        # move and then
         recalculatePossibleMoves()
 
 
