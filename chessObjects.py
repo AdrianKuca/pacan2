@@ -8,7 +8,7 @@ class Position:
 
     @x.setter
     def x(self, a):
-        if self.isyInBoard():
+        if self.isCoordInBoard():
             self.coordinates[0] = a
         else:
             raise Exception("X out of board")
@@ -19,7 +19,7 @@ class Position:
 
     @y.setter
     def y(self, a):
-        if self.isyInBoard():
+        if self.isCoordInBoard():
             self.coordinates[1] = a
         else:
             raise Exception("Y out of board")
@@ -43,13 +43,7 @@ class Position:
         else:
             return False
 
-    def isxInBoard(self, x):
-        if x >= 0 and x < 8:
-            return True
-        else:
-            return False
-
-    def isyInBoard(self, y):
+    def isCoordInBoard(self, y):
         if y >= 0 and y < 8:
             return True
         else:
@@ -83,23 +77,86 @@ class Knight(Figure):
     self.symbol = "N"
 
     def recalculatePossibleFigureMoves(self, position):
-        pass
+        return [
+            Position(position.x+1, position.y+2),
+            Position(position.x+2, position.y+1),
+            Position(position.x+2, position.y-1),
+            Position(position.x+1, position.y-2),
+            Position(position.x-1, position.y+2),
+            Position(position.x-2, position.y+1),
+            Position(position.x-2, position.y-1),
+            Position(position.x-1, position.y-2),
+        ]
 
 
 class Rook(Figure):
     self.symbol = "R"
 
+    def recalculatePossibleFigureMoves(self, position):
+        possibleMoves = []
+        for i in range(0, 8):
+            if position.x != i:
+                possibleMoves.append(Position(i, position.y))
+        for j in range(0, 8):
+            if position.y != j:
+                possibleMoves.append(Position(position.x, j))
+        return possibleMoves
+
 
 class Bishop(Figure):
     self.symbol = "B"
+
+    def recalculatePossibleFigureMoves(self, position):
+        possibleMoves = []
+        for i in range(1, 8 - position.x):
+            possibleMoves.append(Position(position.x + i, position.y + i))
+        for i in range(1, position.x):
+            possibleMoves.append(Position(position.x - i, position.y - i))
+        for i in range(1, 8 - position.x):
+            possibleMoves.append(Position(position.x + i, position.y - i))
+        for i in range(1, position.x):
+            possibleMoves.append(Position(position.x - i, position.y + i))
+        return possibleMoves
 
 
 class Queen(Figure):
     self.symbol = "Q"
 
+    def recalculatePossibleFigureMoves(self, position):
+        possibleMoves = []
+        for i in range(1, 8 - position.x):
+            possibleMoves.append(Position(position.x + i, position.y + i))
+        for i in range(1, position.x):
+            possibleMoves.append(Position(position.x - i, position.y - i))
+        for i in range(1, 8 - position.x):
+            possibleMoves.append(Position(position.x + i, position.y - i))
+        for i in range(1, position.x):
+            possibleMoves.append(Position(position.x - i, position.y + i))
+        for i in range(0, 8):
+            if position.x != i:
+                possibleMoves.append(Position(i, position.y))
+        for j in range(0, 8):
+            if position.y != j:
+                possibleMoves.append(Position(position.x, j))
+        return possibleMoves
+
 
 class King(Figure):
     self.symbol = "K"
+
+    def recalculatePossibleFigureMoves(self, position):
+        return [
+            Position(position.x, position.y+1),
+            Position(position.x, position.y-1),
+
+            Position(position.x+1, position.y+1),
+            Position(position.x+1, position.y),
+            Position(position.x+1, position.y-1),
+
+            Position(position.x-1, position.y+1),
+            Position(position.x-1, position.y),
+            Position(position.x-1, position.y-1),
+        ]
 
 
 class Checker:
@@ -108,6 +165,8 @@ class Checker:
         self.position = position
         self.color = color
         self.facing = facing
+        self.isProtectingKing = False
+        self.isAttackingKing = False
         self.recalculatePossibleMoves()
 
     def recalculatePossibleMoves(self):
